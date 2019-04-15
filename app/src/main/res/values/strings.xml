@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">IUGChatBot</string>
+    <string name="input_placeholder">Write a message</string>
+    <string name="Ok">OK</string>
+    <string name="Cancel">Cancel</string>
+
+</resources>
