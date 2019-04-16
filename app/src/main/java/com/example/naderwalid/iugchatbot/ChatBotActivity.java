@@ -51,8 +51,6 @@ public class ChatBotActivity extends AppCompatActivity {
 
     ImageView image_view;
 
-
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
