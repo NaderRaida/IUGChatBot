@@ -24,6 +24,7 @@ import java.util.List;
 public class SplashActivity extends AppCompatActivity {
     private static final int PERMISSIONS_REQUEST_INTERNET = 1;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
