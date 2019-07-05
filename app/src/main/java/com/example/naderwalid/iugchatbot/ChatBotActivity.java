@@ -172,8 +172,6 @@ public class ChatBotActivity extends AppCompatActivity {
                     messageAdapter.add(new Message(text,bot,I_AM_BOT));
                     messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
                     context = mssg.getContext();
-                }else{
-
                 }
             }
         });
