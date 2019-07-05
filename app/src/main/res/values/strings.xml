@@ -1,7 +1,10 @@
 <resources>
-    <string name="app_name">IUGChatBot</string>
-    <string name="input_placeholder">Write a message</string>
+    <string name="app_name">IUG Bot</string>
+    <string name="input_placeholder">اكتب السؤال هنا</string>
     <string name="Ok">OK</string>
     <string name="Cancel">Cancel</string>
+    <string name="text_example">How are you doing? This is a long message that should probably wrap.</string>
+    <string name="iug_bot_text">IUG BOT</string>
+    <string name="placeholder_message">Placeholder message</string>
 
 </resources>

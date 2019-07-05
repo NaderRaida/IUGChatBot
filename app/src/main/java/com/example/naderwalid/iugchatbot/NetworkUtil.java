@@ -11,14 +11,14 @@ class NetworkUtil {
         NetworkInfo activeNetwork = cm.getActiveNetworkInfo();
         if (activeNetwork != null) {
             if (activeNetwork.getType() == ConnectivityManager.TYPE_WIFI) {
-                status = "Wifi enabled";
+                status = "تم تفعل الواي فاي";
                 return status;
             } else if (activeNetwork.getType() == ConnectivityManager.TYPE_MOBILE) {
-                status = "Mobile data enabled";
+                status = "تم تفعيل بيانات الهاتف";
                 return status;
             }
         } else {
-            status = "No internet is available";
+            status = "لا يوجد إتصال بالإنترنت";
             return status;
         }
         return status;

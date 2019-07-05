@@ -17,6 +17,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.Toast;
 
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
@@ -56,6 +57,7 @@ public class SplashActivity extends AppCompatActivity {
         final List<String> listPermissionsNeeded = new ArrayList<>();
         if (storage != PackageManager.PERMISSION_GRANTED) {
             listPermissionsNeeded.add(Manifest.permission.ACCESS_NETWORK_STATE);
+//        startActivity(new Intent(this,ChatBotActivity.class));
         }
         if (!listPermissionsNeeded.isEmpty()) {
             ActivityCompat.requestPermissions(SplashActivity.this, listPermissionsNeeded.toArray

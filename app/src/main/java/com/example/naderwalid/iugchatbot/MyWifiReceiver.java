@@ -10,7 +10,7 @@ public class MyWifiReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         String status = NetworkUtil.getConnectivityStatusString(context);
         if(status.isEmpty()) {
-            status="No Internet Connection";
+            status="لا يوجد إتصال بالإنترنت";
         }
         Toast.makeText(context, status, Toast.LENGTH_LONG).show();
     }

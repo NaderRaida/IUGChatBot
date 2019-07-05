@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.example.naderwalid.iugchatbot.arabicstemmer.ArabicStemmer;
 import com.ibm.watson.developer_cloud.conversation.v1.ConversationService;
 import com.ibm.watson.developer_cloud.conversation.v1.model.DialogNodeResponse;
 import com.ibm.watson.developer_cloud.conversation.v1.model.MessageRequest;
@@ -31,7 +32,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ChatBotActivity extends AppCompatActivity {
@@ -60,16 +63,6 @@ public class ChatBotActivity extends AppCompatActivity {
         messages_view = findViewById(R.id.messages_view);
         send = findViewById(R.id.send_button);
         message_field = findViewById(R.id.editText);
-//        image_view = findViewById(R.id.image);
-//        image_view.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Intent intent =new Intent();
-//                intent.setType("image/*");
-//                intent.setAction(Intent.ACTION_GET_CONTENT);
-//                startActivityForResult(Intent.createChooser(intent,"Select Contact Image"),REQUEST_CODE_PICK_IMAGE);
-//            }
-//        });
         mainContext = getApplicationContext();
         messageAdapter = new MessageAdapter(mainContext);
         messages_view.setAdapter(messageAdapter);
@@ -77,23 +70,55 @@ public class ChatBotActivity extends AppCompatActivity {
         if (ContextCompat.checkSelfPermission(ChatBotActivity.this, Manifest.permission.INTERNET) == PackageManager.PERMISSION_GRANTED) {
             conversationService = initConversationService();
             MessageResponse response = null;
-            conversationAPI(String.valueOf(message_field.getText()), context, inputWorkspaceId);
+            conversationAPI(String.valueOf(message_field.getText()), context, inputWorkspaceId,String.valueOf(message_field.getText()));
 
         } else {
             requestInternetPermission();
         }
 
-
-
-
-
         send.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                conversationAPI(String.valueOf(message_field.getText()), context, inputWorkspaceId);
-                message_field.getText().clear();
+                if (message_field.getText().length() != 0){
+                    String message = stemming(String.valueOf(message_field.getText()));
+                    conversationAPI(message, context, inputWorkspaceId,String.valueOf(message_field.getText()));
+                    message_field.getText().clear();
+                }
+
             }
         });
+    }
+    private String stemming(String targetLine){
+        List<String> clearList = new ArrayList<>();
+        List<String> wordsList =null;
+            wordsList = convertLineToWords(targetLine);
+            StringBuilder sb =new StringBuilder();
+            String afterStemming ;
+            for (int i = 0; i < wordsList.size(); i++) {
+                afterStemming = stemmingWords(wordsList.get(i));
+                sb.append(afterStemming+" ");
+            }
+            String newLine = sb.toString();
+
+        return  newLine;
+    }
+    private String stemmingWords(String word){
+        ArabicStemmer arabicStemmer = new ArabicStemmer();
+        arabicStemmer.setCurrent(word);
+        arabicStemmer.stem();
+
+        return arabicStemmer.getCurrent();
+    }
+    private List<String> convertLineToWords(String line){
+        String[] words = null ;
+        List<String> wordsList = new ArrayList<>();
+            String clean = line.trim().replaceAll("\\s+", " ");
+            words = clean.split(" ");
+        for (String word : words) {
+            wordsList.add(word);
+        }
+
+        return wordsList;
     }
     private ConversationService initConversationService() {
         ConversationService service = new ConversationService(ConversationService.VERSION_DATE_2016_07_11);
@@ -103,24 +128,19 @@ public class ChatBotActivity extends AppCompatActivity {
         service.setEndPoint(getString(R.string.conversation_url));
         return service;
     }
-    public void conversationAPI(String input, Map context, String workspaceId) {
+    public void conversationAPI(String input, Map context, String workspaceId,String originalMessage) {
 
-        //conversationService
         MessageRequest newMessage = new MessageRequest.Builder()
                 .inputText(input).context(context).build();
         if (message_field.getText().length()>0){
-            messageAdapter.add(new Message(input,user,I_AM_USER));
+            messageAdapter.add(new Message(originalMessage,user,I_AM_USER));
             messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
         }
-        //cannot use the following as it will attempt to run on the UI thread and crash
-//    MessageResponse response = conversationService.message(workspaceId, newMessage).execute();
 
-        //use the following so it runs on own async thread
-        //then when get a response it calls displayMsg that will update the UI
         conversationService.message(workspaceId, newMessage).enqueue(new ServiceCallback<MessageResponse>() {
             @Override
             public void onResponse(MessageResponse response) {
-                //output to system log output, just for verification/checking
+
                 System.out.println(response);
                 displayMsg(response);
             }
@@ -134,32 +154,11 @@ public class ChatBotActivity extends AppCompatActivity {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                Toast.makeText(ChatBotActivity.this, e.getMessage(), Toast.LENGTH_SHORT).show();
-                e.printStackTrace();
+                Toast.makeText(ChatBotActivity.this, "رجاءاً, تأكد من إتصالك بالإنترنت", Toast.LENGTH_SHORT).show();
             }
         });
     }
-    private void requestInternetPermission() {
-        // TODO - Check if showing permission rationale needed
-        // If yes, call showExplanationDialog() to explain why you need this permission
-        // If not, request the permission from the Android system
-        if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this, Manifest.permission.INTERNET)) {
-            showExplanationDialog();
 
-        } else {
-            ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.INTERNET}, PERMISSIONS_REQUEST_INTERNET);
-
-        }
-
-    }
-  /* public void getDialogNode (DialogNodeResponse dialogNode){
-        handler.post(new Runnable() {
-            @Override
-            public void run() {
-
-            }
-        });
-   }*/
     public void displayMsg(final MessageResponse msg)
     {
         final MessageResponse mssg=msg;
@@ -168,99 +167,16 @@ public class ChatBotActivity extends AppCompatActivity {
             @Override
             public void run() {
 
-                //from the WCS API response
-                //https://www.ibm.com/watson/developercloud/conversation/api/v1/?java#send_message
-                //extract the text from output to display to the user
                if (!mssg.getText().isEmpty()){
-
                     String text = mssg.getText().get(0);
-                    //now output the text to the UI to show the chat history
                     messageAdapter.add(new Message(text,bot,I_AM_BOT));
                     messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
-                   //set the context, so that the next time we call WCS we pass the accumulated context
                     context = mssg.getContext();
                 }else{
-                    Toast.makeText(mainContext, ""+mssg, Toast.LENGTH_LONG).show();
 
                 }
-
-//                //now output the text to the UI to show the chat history
-//                messageAdapter.add(new Message(text,bot,I_AM_BOT));
-//                messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
-//
-//                //set the context, so that the next time we call WCS we pass the accumulated context
-//                context = mssg.getContext();
-
-                //rather than converting response to a JSONObject and parsing through it
-                //we can use the APIs for the MessageResponse .getXXXXX() to get the values as shown above
-                //keeping the following just in case need this at a later date
-                //
-                //          https://developer.android.com/reference/org/json/JSONObject.html
-
-               /* try {
-                    JSONObject jObject= new JSONObject(msg.getContext());
-                    JSONObject jsonOutput = jObject.getJSONObject("output");
-                    JSONArray jArray1 = jsonOutput.getJSONArray("text");
-                    JSONArray jArray3 = jsonOutput.getJSONArray("option");
-                    JSONArray jArray2= jObject.getJSONArray("intents");
-
-
-
-                    if (jArray3 != null){
-                        for (int i=0; i < jArray3.length(); i++)
-                        {
-                            try {
-                                String textContent = String.valueOf(jArray3.getString(i));
-                                System.out.println(textContent);
-                                messageAdapter.add(new Message(textContent,bot,I_AM_BOT));
-                                messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
-                            } catch (JSONException e) {
-                                // Oops
-                                System.out.println(e);
-                            }
-                        }
-                    }
-
-
-                    if (jArray1 != null){
-                        for (int i=0; i < jArray1.length(); i++)
-                        {
-                            try {
-                                String textContent = String.valueOf(jArray1.getString(i));
-                                System.out.println(textContent);
-                                messageAdapter.add(new Message(textContent,bot,I_AM_BOT));
-                                messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
-                            } catch (JSONException e) {
-                                // Oops
-                                System.out.println(e);
-                            }
-                        }
-                    }
-                    if(jArray2 != null){
-                        for (int i=0; i < jArray2.length(); i++)
-                        {
-                            try {
-                                JSONObject oneObject = jArray2.getJSONObject(i);
-                                // Pulling items from the array
-                                String oneObjectsItem = oneObject.getString("confidence");
-                                String oneObjectsItem2 = oneObject.getString("intent");
-                                String jOutput = oneObjectsItem+" : "+oneObjectsItem2;
-                                messageAdapter.add(new Message(jOutput,bot,I_AM_BOT));
-                                messages_view.smoothScrollToPosition(messages_view.getCount() - 1);
-
-                            } catch (JSONException e) {
-                                // Oops
-                            }
-                        }
-                    }
-                }catch (JSONException ex){
-
-                }
-                */
-
             }
         });
-
 
     }
 
@@ -272,6 +188,16 @@ public class ChatBotActivity extends AppCompatActivity {
 
             }
         }
+    }
+    private void requestInternetPermission() {
+        if (ActivityCompat.shouldShowRequestPermissionRationale(ChatBotActivity.this, Manifest.permission.INTERNET)) {
+            showExplanationDialog();
+
+        } else {
+            ActivityCompat.requestPermissions(ChatBotActivity.this, new String[]{Manifest.permission.INTERNET}, PERMISSIONS_REQUEST_INTERNET);
+
+        }
+
     }
 
     private void showExplanationDialog() {

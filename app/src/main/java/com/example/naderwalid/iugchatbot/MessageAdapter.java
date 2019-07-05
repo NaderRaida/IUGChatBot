@@ -53,13 +53,11 @@ public class MessageAdapter extends BaseAdapter {
         Message message = messages.get(i);
 
         if (message.isBelongsToCurrentUser()) {
-            // this message was sent by us so let's create a basic chat bubble on the right
             convertView = messageInflater.inflate(R.layout.my_message, null);
             holder.messageBody = convertView.findViewById(R.id.message_body);
             convertView.setTag(holder);
             holder.messageBody.setText(message.getText());
         } else {
-            // this message was sent by someone else so let's create an advanced chat bubble on the left
             convertView = messageInflater.inflate(R.layout.bot_message, null);
             holder.avatar = convertView.findViewById(R.id.avatar);
             holder.name =  convertView.findViewById(R.id.name);
@@ -68,9 +66,6 @@ public class MessageAdapter extends BaseAdapter {
 
             holder.name.setText(message.getMemberData().getName());
             holder.messageBody.setText(message.getText());
-            //to set color to bot account...
-            GradientDrawable drawable = (GradientDrawable) holder.avatar.getBackground();
-            drawable.setColor(Color.parseColor(message.getMemberData().getColor()));
         }
 
         return convertView;
