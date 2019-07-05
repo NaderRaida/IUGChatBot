@@ -89,7 +89,6 @@ public class ChatBotActivity extends AppCompatActivity {
         });
     }
     private String stemming(String targetLine){
-        List<String> clearList = new ArrayList<>();
         List<String> wordsList =null;
             wordsList = convertLineToWords(targetLine);
             StringBuilder sb =new StringBuilder();
