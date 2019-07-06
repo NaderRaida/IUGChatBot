@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingVertical="10dp"
@@ -7,13 +8,14 @@
     android:paddingRight="60dp"
     android:clipToPadding="false">
 
-    <View
+    <ImageView
+        android:src="@drawable/icon"
         android:id="@+id/avatar"
         android:layout_alignParentLeft="true"
         android:scaleType="centerInside"
-        android:background="@drawable/icon"
         android:layout_width="50dp"
-        android:layout_height="50dp" />
+        android:layout_height="50dp"
+        />
 
     <TextView
         android:id="@+id/name"
@@ -26,16 +28,14 @@
         android:text="@string/iug_bot_text"
         android:visibility="invisible"
         />
-
     <RelativeLayout
         android:id="@+id/message_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignLeft="@+id/name"
         android:layout_below="@+id/name"
-        android:background="@drawable/bot_message"
+        android:background="@drawable/bot_message_shape"
         >
-
         <TextView
             android:layout_marginRight="8dp"
             android:padding="10dp"

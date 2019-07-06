@@ -1,9 +1,37 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".SplashActivity">
-
-</android.support.constraint.ConstraintLayout>
+    tools:context=".SplashActivity"
+    android:background="#f4fcf9"
+    >
+    <ImageView
+        android:layout_width="200dp"
+        android:layout_height="200dp"
+        android:id="@+id/img"
+        android:src="@drawable/icon_chatbot"
+        android:layout_centerInParent="true"
+        />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/img"
+        android:layout_centerInParent="true"
+        android:layout_marginTop="15dp"
+        android:id="@+id/txt"
+        android:textSize="22sp"
+        android:textColor="@color/colorPrimaryDark"
+        android:text="أهلا وسهلاً بك عزيزي الطالب"
+        />
+    <ProgressBar
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:id="@+id/progress"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="25dp"
+        android:theme="@style/progressBarBlue"
+        />
+</RelativeLayout>
